@@ -1,14 +1,14 @@
 /* eslint-disable prettier/prettier */
 import { Sequelize } from 'sequelize-typescript';
-import { SEQUELIZE, DEVELOPMENT, TEST, PRODUCTION } from '../constants';
-import { databaseConfig } from './database.config';
+import { SEQUELIZE } from '../constants';
 import { User } from 'src/modules/users/user.entity';
+
 
 export const databaseProviders = [{
     provide: SEQUELIZE,
     useFactory: async () => {
-        let config;
-        switch (process.env.NODE_ENV) {
+        const { DB_USER, DB_PASS, DB_HOST, DB_NAME } = process.env;
+     /*    switch (process.env.NODE_ENV) {
         case DEVELOPMENT:
            config = databaseConfig.development;
            break;
@@ -20,8 +20,8 @@ export const databaseProviders = [{
            break;
         default:
            config = databaseConfig.development;
-        }
-        const sequelize = new Sequelize(config);
+        } */
+        const sequelize = new Sequelize(`postgres://${DB_USER}:${DB_PASS}@${DB_HOST}/${DB_NAME}`);
         sequelize.addModels([User]);
         await sequelize.sync();
         return sequelize;
