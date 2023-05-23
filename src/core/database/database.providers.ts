@@ -1,27 +1,31 @@
 /* eslint-disable prettier/prettier */
+import * as dotenv from 'dotenv';
 import { Sequelize } from 'sequelize-typescript';
-import { SEQUELIZE } from '../constants';
+import { SEQUELIZE, DEVELOPMENT, TEST, PRODUCTION } from '../constants';
 import { User } from 'src/modules/users/user.entity';
+import { databaseConfig } from './database.config';
 
+
+dotenv.config();
 
 export const databaseProviders = [{
     provide: SEQUELIZE,
     useFactory: async () => {
-        const { DB_USER, DB_PASS, DB_HOST, DB_NAME } = process.env;
-     /*    switch (process.env.NODE_ENV) {
+        let config;
+         switch (process.env.NODE_ENV) {
         case DEVELOPMENT:
-           config = databaseConfig.development;
+           config = databaseConfig.development.urlDatabase;
            break;
         case TEST:
-           config = databaseConfig.test;
+           config = databaseConfig.test.urlDatabase;
            break;
         case PRODUCTION:
-           config = databaseConfig.production;
+           config = databaseConfig.production.urlDatabase;
            break;
         default:
-           config = databaseConfig.development;
-        } */
-        const sequelize = new Sequelize(`postgres://${DB_USER}:${DB_PASS}@${DB_HOST}/${DB_NAME}`);
+           config = databaseConfig.development.urlDatabase;
+        } 
+        const sequelize = new Sequelize(config);
         sequelize.addModels([User]);
         await sequelize.sync();
         return sequelize;
